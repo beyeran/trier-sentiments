@@ -6,6 +6,7 @@
 # utilities
 import csv
 import numpy as np
+import pickle
 
 # learning stuff
 from sklearn.pipeline import Pipeline
@@ -69,6 +70,17 @@ class SVMModel:
                     count += 1
 
         return [correct, wrong]
+
+    def todisk(self, path):
+        with open(path, 'wb') as f:
+            pickle.dump(self.model, f)
+
+    @classmethod
+    def fromdisk(cls, path):
+        with open(path, 'rb') as f:
+            cls.model = pickle.load(f)
+
+            return cls
 
 
 
