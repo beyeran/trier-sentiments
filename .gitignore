@@ -90,3 +90,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# server stuff
+node_modules
+public
+elm-stuff
+.DS_Store
