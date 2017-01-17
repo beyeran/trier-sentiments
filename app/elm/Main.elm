@@ -4,17 +4,14 @@ module Main exposing (main)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.App exposing (..)
 import Http
 import HttpBuilder exposing (..)
 import Json.Decode as Decode exposing (..)
-import Json.Decode.Pipeline as JsonPipeline exposing (decode, required)
-import Json.Decode.Extra exposing ((|:))
 import Json.Encode as Encode exposing (..)
 import Task
 
 main =
-    Html.App.program
+    Html.program
         { init = init
         , view = view
         , update = update
@@ -41,18 +38,13 @@ type alias Model =
     , classification : String
     }
 
-type alias JSONResponse =
-    { classification : String
-    , status : Int
-    }
 
 init : (Model, Cmd Msg)
 init = (Model "what a terrible movie" "", Cmd.none)
 
 -- update
 type Msg = Submit
-         | FetchSucceed JSONResponse
-         | FetchFail Http.Error
+         | Fetch (Result Http.Error String)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -60,49 +52,23 @@ update msg model =
         Submit ->
             (model, fetchSentiment model.sentiment)
 
-        FetchSucceed res->
-            ({ model | classification = res.classification}, Cmd.none)
+        Fetch (Ok res) ->
+            (Model "" res, Cmd.none)
 
-        FetchFail error ->
+        Fetch (Err _) ->
             (model, Cmd.none)
 
 -- http
 jsonify : String -> Http.Body
 jsonify str =
-    let
-        json = Encode.encode 0 <| Encode.object [("sentiment", Encode.string str)]
-    in
-        Http.string json
+    Http.jsonBody <| Encode.object [("sentiment", Encode.string str)]
 
--- decodeJson : Decode.Decoder JSONResponse
--- decodeJson =
---     decode JSONResponse
---         |> JsonPipeline.required "sentiment" Decode.string
---         |> JsonPipeline.required "status" Decode.int
-
-decodeJson : Decode.Decoder JSONResponse
+decodeJson : Decode.Decoder String
 decodeJson =
-    Decode.succeed JSONResponse
-        |: ("classification" := Decode.string)
-        |: ("status" := Decode.int)
-
-decodeSentiment : String -> Platform.Task Http.Error JSONResponse
-decodeSentiment sentiment =
-    Http.post decodeJson "http://127.0.0.1:5000/sentiment" (jsonify sentiment)
-
--- decodeSentiment : String -> Platform.Task Http.Error JSONResponse
--- decodeSentiment sentiment =
---     Http.fromJson decodeJson (Http.send Http.defaultSettings <| header sentiment)
+    Decode.map2 (\classification status -> classification)
+        (Decode.field "classification" Decode.string)
+        (Decode.field "status" Decode.int)
 
 fetchSentiment : String -> Cmd Msg
 fetchSentiment sentiment =
-    Task.perform FetchFail FetchSucceed (decodeSentiment sentiment)
-
-header : String -> Request
-header body =
-    { verb = "POST"
-    , headers =
-          [ ("Content-Type", "application/x-www-form-urlencoded") ]
-    , url = "http://127.0.0.1:5000/sentiment"
-    , body = jsonify body
-    }
+    Http.send Fetch (Http.post "http//127.0.0.1:5000/sentiment" (jsonify sentiment) decodeJson)
