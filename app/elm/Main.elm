@@ -31,7 +31,8 @@ view model =
         [ h2 [] [text "just a damn test"]
         , button [ onClick Submit ] [ text "Classify" ]
         , br [] []
-        , p [] [ text model.classification ]
+        , pre [] [ text "foo" ]
+        , pre [] [ text model.classification ]
         ]
 
 -- model
@@ -46,7 +47,7 @@ type alias JSONResponse =
     }
 
 init : (Model, Cmd Msg)
-init = (Model "what a terrible movie" "", Cmd.none )
+init = (Model "what a terrible movie" "", Cmd.none)
 
 -- update
 type Msg = Submit
@@ -59,8 +60,8 @@ update msg model =
         Submit ->
             (model, fetchSentiment model.sentiment)
 
-        FetchSucceed response->
-            (Model model.sentiment response.classification, Cmd.none)
+        FetchSucceed res->
+            ({ model | classification = res.classification}, Cmd.none)
 
         FetchFail error ->
             (model, Cmd.none)
@@ -73,16 +74,35 @@ jsonify str =
     in
         Http.string json
 
+-- decodeJson : Decode.Decoder JSONResponse
+-- decodeJson =
+--     decode JSONResponse
+--         |> JsonPipeline.required "sentiment" Decode.string
+--         |> JsonPipeline.required "status" Decode.int
+
 decodeJson : Decode.Decoder JSONResponse
 decodeJson =
-    decode JSONResponse
-        |> JsonPipeline.required "sentiment" Decode.string
-        |> JsonPipeline.required "status" Decode.int
+    Decode.succeed JSONResponse
+        |: ("classification" := Decode.string)
+        |: ("status" := Decode.int)
 
 decodeSentiment : String -> Platform.Task Http.Error JSONResponse
 decodeSentiment sentiment =
     Http.post decodeJson "http://127.0.0.1:5000/sentiment" (jsonify sentiment)
 
+-- decodeSentiment : String -> Platform.Task Http.Error JSONResponse
+-- decodeSentiment sentiment =
+--     Http.fromJson decodeJson (Http.send Http.defaultSettings <| header sentiment)
+
 fetchSentiment : String -> Cmd Msg
 fetchSentiment sentiment =
     Task.perform FetchFail FetchSucceed (decodeSentiment sentiment)
+
+header : String -> Request
+header body =
+    { verb = "POST"
+    , headers =
+          [ ("Content-Type", "application/x-www-form-urlencoded") ]
+    , url = "http://127.0.0.1:5000/sentiment"
+    , body = jsonify body
+    }

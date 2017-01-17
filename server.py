@@ -3,6 +3,7 @@ from ai.tfidf_models import SVMModel
 
 # server
 from flask import Flask, request, render_template, jsonify
+import json
 
 # obtain model
 svm = SVMModel('ai/data/train.tsv') # initialize model (path not really needed)
@@ -14,8 +15,9 @@ app = Flask(__name__)
 @app.route('/sentiment', methods=['POST'])
 def sentiment_classification():
     try:
-        _sentiment = request.form['sentiment']
-
+        req = json.loads(request.data.decode("utf-8"))
+        _sentiment = str(req['sentiment'])
+        
         if _sentiment == None:
             return jsonify({'status': 100, 'message': 'invalid form data'})
 
