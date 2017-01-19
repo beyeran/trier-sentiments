@@ -25,12 +25,29 @@ subscriptions model = Sub.none
 view : Model -> Html Msg
 view model =
     div []
-        [ h2 [] [text "just a damn test"]
-        , button [ onClick Submit ] [ text "Classify" ]
+        [ h2 [] [text "Trier Sentiments"]
+        , inputArea
         , br [] []
-        , pre [] [ text "foo" ]
-        , pre [] [ text model.classification ]
+        , viewResult model
         ]
+
+inputArea : Html Msg
+inputArea =
+    textarea [ placeholder "Type here...", onInput Submit ] []
+
+viewResult : Model -> Html Msg
+viewResult model =
+    let
+        color =
+            case model.classification of
+                "negative"          -> "red"
+                "somewhat negative" -> "red"
+                "neutral"           -> "grey"
+                "somewhat positive" -> "green"
+                "positive"          -> "green"
+                _                   -> "grey"
+    in
+        div [ style [("color", color)] ] [ text model.classification ]
 
 -- model
 type alias Model =
@@ -38,37 +55,47 @@ type alias Model =
     , classification : String
     }
 
+type alias JSONResponse =
+    { classification : String
+    , status : Int
+    }
 
 init : (Model, Cmd Msg)
-init = (Model "what a terrible movie" "", Cmd.none)
+init = (Model "" "", Cmd.none)
 
 -- update
-type Msg = Submit
-         | Fetch (Result Http.Error String)
+type Msg = Submit String
+         | Fetch (Result Http.Error JSONResponse)
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Submit ->
-            (model, fetchSentiment model.sentiment)
+        Submit str ->
+            (Model str model.classification, fetchSentiment str Fetch)
 
         Fetch (Ok res) ->
-            (Model "" res, Cmd.none)
+            (Model "" res.classification, Cmd.none)
 
         Fetch (Err _) ->
             (model, Cmd.none)
 
--- http
-jsonify : String -> Http.Body
-jsonify str =
-    Http.jsonBody <| Encode.object [("sentiment", Encode.string str)]
 
-decodeJson : Decode.Decoder String
+-- http
+jsonify : String -> String
+jsonify str =
+    "{\"sentiment\":\"" ++ str ++ "\"}"
+
+decodeJson : Decode.Decoder JSONResponse
 decodeJson =
-    Decode.map2 (\classification status -> classification)
+    Decode.map2 JSONResponse
         (Decode.field "classification" Decode.string)
         (Decode.field "status" Decode.int)
 
-fetchSentiment : String -> Cmd Msg
-fetchSentiment sentiment =
-    Http.send Fetch (Http.post "http//127.0.0.1:5000/sentiment" (jsonify sentiment) decodeJson)
+
+fetchSentiment : String -> (Result Http.Error JSONResponse -> Msg) -> Cmd Msg
+fetchSentiment str msg =
+    Http.post "http://127.0.0.1:5000/sentiment"
+        (Http.stringBody "application/json" <| jsonify str)
+        decodeJson
+        |> Http.send msg

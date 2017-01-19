@@ -3,6 +3,7 @@ from ai.tfidf_models import SVMModel
 
 # server
 from flask import Flask, request, render_template, jsonify
+from flask_cors import CORS, cross_origin
 import json
 
 # obtain model
@@ -10,14 +11,17 @@ svm = SVMModel('ai/data/train.tsv') # initialize model (path not really needed)
 svm.fromdisk('ai/models/svm.model') # load pretrained model
 
 app = Flask(__name__)
+CORS(app)
 
 # api
 @app.route('/sentiment', methods=['POST'])
 def sentiment_classification():
+    print(request)
+    
     try:
         req = json.loads(request.data.decode("utf-8"))
         _sentiment = str(req['sentiment'])
-        
+
         if _sentiment == None:
             return jsonify({'status': 100, 'message': 'invalid form data'})
 
