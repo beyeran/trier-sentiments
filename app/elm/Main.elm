@@ -24,11 +24,13 @@ subscriptions model = Sub.none
 -- view
 view : Model -> Html Msg
 view model =
-    div []
-        [ h2 [] [text "Trier Sentiments"]
-        , inputArea
-        , br [] []
-        , viewResult model
+    div [class "wrapper"]
+        [ div [class "content"] [
+               h2 [] [text "Trier Sentiments"]
+              , inputArea
+              , br [] []
+              , viewResult model
+              ]
         ]
 
 inputArea : Html Msg
@@ -47,7 +49,9 @@ viewResult model =
                 "positive"          -> "green"
                 _                   -> "grey"
     in
-        div [ style [("color", color)] ] [ text model.classification ]
+        div [class "result"] [
+             div [ style [("color", color)] ] [ text model.classification ]
+            ]
 
 -- model
 type alias Model =
