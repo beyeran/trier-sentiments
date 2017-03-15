@@ -5,12 +5,16 @@ from ai.tfidf_models import SVMModel
 from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS, cross_origin
 import json
+import os
 
 # obtain model
 svm = SVMModel('ai/data/train.tsv') # initialize model (path not really needed)
 svm.fromdisk('ai/models/svm.model') # load pretrained model
 
-app = Flask(__name__)
+# config app
+template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+app = Flask(__name__, template_folder=template_dir, static_url_path='')
+
 CORS(app)
 
 # api
@@ -35,11 +39,10 @@ def sentiment_classification():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-
-@app.route("/")
-def main():
-    return 'hello'
-
+# frontend
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

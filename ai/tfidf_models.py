@@ -13,11 +13,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-import xgboost
 
 ###
 ### models
-####
+###
 class SVMModel:
     model     = None
     train_set = []
@@ -112,8 +111,8 @@ class XGBoostModel:
         weighted = tfidf.fit_transform(counts.toarray())
 
         print("Learning...")
-        model = xgboost.XGBClassifier()
-        model.fit(weighted.toarray(), np.asarray(label_set))
+        model = None # xgboost.XGBClassifier()
+        # model.fit(weighted.toarray(), np.asarray(label_set))
     
         self.model = model
 
