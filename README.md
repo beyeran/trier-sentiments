@@ -3,7 +3,9 @@ Trier Sentiments is a small web application for automatically rating movie revie
 small presentation for advertising the computational linguistics depatement in Trier, Germany. 
 
 ## Screenshot
-![screenshot](screen.png)
+<p align="center">
+    <img src="https://github.com/beyeran/trier-sentiments/blob/master/screen.png?raw=true" alt="screenshot"/>
+</p>
 
 ## Getting Started
 
