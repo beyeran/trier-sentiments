@@ -1,6 +1,6 @@
 # Trier Sentiments
 Trier Sentiments is a small web application for automatically rating movie reviews. It was used as a
-small presentation for advertising the computational linguistics depatement in Trier, Germany. 
+small presentation for advertising the computational linguistics departement in Trier, Germany. 
 
 ## Screenshot
 <p align="center">
