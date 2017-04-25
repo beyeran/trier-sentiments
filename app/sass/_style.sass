@@ -1,6 +1,12 @@
+@import "bootstrap";
+
 @import url(https://fonts.googleapis.com/css?family=Raleway:200)
 
 $header-font: 'Raleway', sans-serif
+
+$icon-font-path: "/fonts/"
+
+$copyright: 0.8em
 
 .wrapper
   text-align: center
@@ -13,8 +19,51 @@ h1, h2, h3
   letter-spacing: 0.3em
 
 textarea
-  width: 50em
-  height: 20em
+  width: 60em
+  height: 18em
+  margin-top: 2em
 
 .result
   padding-top: 3em
+  margin-bottom: 1.5em
+
+.footer
+  padding: 1em
+  width: 70%
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+  position: absolute
+  bottom: 0px
+  font-family: $header-font
+  font-size: $copyright
+  align: center
+
+.header
+  color: #0000EE
+  padding-left: 15px
+  padding-right: 15px
+  padding-bottom: 20px
+  border-bottom: 1px solid #e5e5e5
+
+  h3
+    margin-top: 0
+    margin-bottom: 0
+    line-height: 40px
+
+.description
+  background-color: #E0EFF1
+  text-align: center
+  display: block
+  width: 100%
+  font-size: 1.5em
+  padding: 0.8em 0.8em
+
+.container
+  height: 100%
+
+.highlight
+  color: #680148
+
+.result
+  font-weight: bold
+  font-size: 1.2em

@@ -18,4 +18,16 @@ module.exports =
 
       sass:
         mode: "native"
+        options:
+          includePaths: ["node_modules/bootstrap-sass/assets/stylesheets/"],
+          precision: 8
 
+      copycat:
+        "fonts": ["node_modules/bootstrap-sass/assets/fonts/bootstrap"]
+
+    npm:
+      enabled: true,
+      globals:
+        $: 'jquery',
+        jQuery: 'jquery',
+        bootstrap: 'bootstrap-sass'

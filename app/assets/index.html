@@ -1,19 +1,51 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Brunch With Elm</title>
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
-  </head>
-
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial scale=1" charset="UTF-8">
+    <title>Computerlinguistik Universität Trier. Nacht der Wissenschaft 2017</title>
     
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+
+<body class="container">
+    <header class="page-header navbar">
+        <h2 class="navbar-left">Trier Sentiments / <small>Computational Linguistics Trier</small></h2>
+
+        <img class="logo navbar-right" alt="" src="{{ url_for('static', filename='images/logo.png')}}" width="120px"/>
+    </header>
+
+    <div class="panel panel-default">
+        <div class="description panel-heading">
+            <p>
+                This application is trained on <b class="highlight">movie
+                reviews</b> from <b class="highlight">rotten tomatoes</b>
+                and should recognize new ones:
+            </p>
+
+            <p>
+                <b class="highlight">Type in a movie review</b> and see how
+                the app will predict it's rating.
+            </p>
+        </div>
+
+        <div class="panel-body">
+            <main id="main-container" class="container-fluid row marketing" align="center">
+            </main>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; FB II: Computerlinguistik, Universität Trier 2017</p>
+    </footer>
+
     <!-- Require Elm Code & Regular JS -->
     <script src="/js/main.js"></script>
     <script src="/js/app.js"></script>
 
-    <!-- Start Elm app in fullscreen mode -->
-    <script>Elm.Main.fullscreen();</script>
-  </body>
+    <!-- Place Elm -->
+    <script>
+     var node = document.getElementById('main-container');
+     Elm.Main.embed(node);
+    </script>
+</body>
 </html>
