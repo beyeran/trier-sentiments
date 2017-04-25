@@ -26,8 +26,7 @@ view : Model -> Html Msg
 view model =
     div [class "wrapper"]
         [ div [class "content"] [
-               h2 [] [text "Trier Sentiments"]
-              , inputArea
+               inputArea
               , br [] []
               , viewResult model
               ]
